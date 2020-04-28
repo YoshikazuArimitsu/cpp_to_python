@@ -8,3 +8,7 @@ def dump_X(x):
 
 def dump_mv(buffer):
     print(buffer)
+    mv = buffer.memoryview()
+    print(type(mv))
+    print(f'length = {len(mv)}')
+    print(f'tobytes = {mv.tobytes()}')

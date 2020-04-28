@@ -1,4 +1,4 @@
-# Boost Python で C++ から Python を呼び出す
+# Boost.Python HelloWorld
 
 ```
 $ sudo apt install libboost-python-dev

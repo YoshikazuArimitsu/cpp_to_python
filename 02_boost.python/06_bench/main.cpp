@@ -8,8 +8,14 @@
 using namespace boost::python;
 using namespace boost::python::api;
 
+static char* c_buffer;
+static unsigned long c_bufferSize;
+
 class Buffer
 {
+    // クラスメンバとしてバッファを持つ方法は失敗
+    // char* は Python の str に変換される為、コピーが発生する＆UTF-8じゃないと落ちる。
+    /*
 private:
     char *bufferPtr_;
     unsigned long length_;
@@ -18,24 +24,31 @@ public:
     Buffer(char *buffer, unsigned long length) : bufferPtr_(buffer), length_(length)
     {
     }
+    */
+
+public:
+    Buffer()
+    {
+    }
 
     object memoryView()
     {
-        boost::python::handle<> handle(PyMemoryView_FromMemory((char *)bufferPtr_, length_, PyBUF_READ));
+        // グローバルに取った c_buffer, c_bufferSize から memoryview を作って返す。
+        boost::python::handle<> handle(PyMemoryView_FromMemory(c_buffer, c_bufferSize, PyBUF_READ));
         return boost::python::object(handle);
     }
 };
 
 BOOST_PYTHON_MODULE(data)
 {
-    class_<Buffer>("Buffer", init<char *, unsigned long>())
+    class_<Buffer>("Buffer", init<>())
         .def("memoryview", &Buffer::memoryView);
 }
 
 int main(int argc, char **argv)
 {
     bool mode_file_ = false;
-    int buffer_size = 1024 * 1024;
+    int buffer_size = 1024 * 1024 * 10;
     Py_Initialize();
 
     if (argc < 2)
@@ -55,8 +68,8 @@ int main(int argc, char **argv)
     object main_namespace = main_module.attr("__dict__");
     object py_endpoint;
 
-    // auto myrand = std::bind(std::uniform_int_distribution<int>(0, 255),
-    //                         std::mt19937(static_cast<unsigned int>(42)));
+    auto myrand = std::bind(std::uniform_int_distribution<int>(0, 255),
+                             std::mt19937(static_cast<unsigned int>(42)));
 
     try
     {
@@ -74,7 +87,7 @@ int main(int argc, char **argv)
         PyErr_Print();
         return -1;
     }
-    auto pybuffer_ctor = class_<Buffer>("Buffer", init<char *, unsigned long>())
+    auto pybuffer_ctor = class_<Buffer>("Buffer", init<>())
                                     .def("memoryview", &Buffer::memoryView);
 
     // 計測開始
@@ -82,6 +95,13 @@ int main(int argc, char **argv)
     for (int n = 0; n < 1000; n++)
     {
         std::vector<char> buffer(buffer_size);
+        c_buffer = buffer.data();
+        c_bufferSize = buffer.size();
+
+        // 遅いからやめとく
+        // for(auto& a : buffer) {
+        //     a = static_cast<char>(myrand());
+        // }
 
         if (mode_file_)
         {
@@ -109,8 +129,7 @@ int main(int argc, char **argv)
         {
             try
             {
-
-                auto pybuffer = pybuffer_ctor((const char *)buffer.data(), buffer.size());
+                auto pybuffer = pybuffer_ctor();
                 py_endpoint(pybuffer);
             }
             catch (boost::python::error_already_set)

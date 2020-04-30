@@ -5,7 +5,12 @@
         "array": "cpp",
         "string": "cpp",
         "string_view": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "initializer_list": "cpp"
     },
     "C_Cpp.default.includePath": [
         "/usr/include/boost"

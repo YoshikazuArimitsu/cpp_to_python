@@ -22,3 +22,11 @@ length = 1048576
 tobytes = <class 'bytes'>
 mv[:32] = b'this is C++ memory\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 ```
+
+## 参考資料
+
+[Python公式 他アプリケーションへの Python の埋め込み](https://docs.python.org/ja/3/extending/embedding.html)
+
+[Boost.Pythonドキュメント(組み込みの章あたり)](http://alpha.osdn.jp/devel/boost.python_ja.pdf)
+
+

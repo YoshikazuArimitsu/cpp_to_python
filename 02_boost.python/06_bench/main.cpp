@@ -8,8 +8,11 @@
 using namespace boost::python;
 using namespace boost::python::api;
 
-static char* c_buffer;
-static unsigned long c_bufferSize;
+namespace
+{
+char *c_buffer;
+unsigned long c_bufferSize;
+} // namespace
 
 class Buffer
 {
@@ -69,7 +72,7 @@ int main(int argc, char **argv)
     object py_endpoint;
 
     auto myrand = std::bind(std::uniform_int_distribution<int>(0, 255),
-                             std::mt19937(static_cast<unsigned int>(42)));
+                            std::mt19937(static_cast<unsigned int>(42)));
 
     try
     {
@@ -88,7 +91,7 @@ int main(int argc, char **argv)
         return -1;
     }
     auto pybuffer_ctor = class_<Buffer>("Buffer", init<>())
-                                    .def("memoryview", &Buffer::memoryView);
+                             .def("memoryview", &Buffer::memoryView);
 
     // 計測開始
     auto start = std::chrono::system_clock::now();
@@ -107,9 +110,12 @@ int main(int argc, char **argv)
         {
             {
                 std::ofstream ofs("data.bin", std::ios::binary);
-                if(ofs) {
+                if (ofs)
+                {
                     ofs.write(buffer.data(), buffer.size());
-                } else {
+                }
+                else
+                {
                     std::cerr << "Open data.bin failed" << std::endl;
                     return -1;
                 }
@@ -139,13 +145,14 @@ int main(int argc, char **argv)
             }
         }
 
-        if(n % 100 == 0) {
+        if (n % 100 == 0)
+        {
             std::cout << "." << std::flush;
         }
     }
     std::cout << std::endl;
 
     auto end = std::chrono::system_clock::now();
-    double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count(); //処理に要した時間をミリ秒に変換
+    double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count(); //処理に要した時間をミリ秒に変換
     std::cout << "elapsed " << elapsed << "msec" << std::endl;
 }

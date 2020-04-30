@@ -14,12 +14,16 @@ int main(int argc, char **argv)
 
     try
     {
+#if 0
         std::ifstream ifs("./greet.py");
         if (ifs)
         {
             std::string script((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
             exec(script.c_str(), main_namespace);
         }
+#else
+        boost::python::exec_file("./greet.py", main_namespace, main_namespace);
+#endif
 
         auto func = main_namespace["greet"];
         auto result = func();

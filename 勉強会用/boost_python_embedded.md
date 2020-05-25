@@ -1,6 +1,10 @@
-# Boost.Python で C++ に Python を組み込む
+# ネイティブバイナリへの Python埋め込み
 
-## Python の 「拡張」 と 「組み込み」
+* ネイティブバイナリ(C/C++)内で PythonVM を利用する方法
+* Python の内部構造について軽く
+* Boost.Python を使用しての連携方法いくつか 
+
+## Python の 「拡張」 と 「埋め込み」
 
 ![Figure1](./Image1.png)  
 
